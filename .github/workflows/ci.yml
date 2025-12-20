@@ -1,0 +1,26 @@
+name: Docker CI (Self Hosted)
+
+on:
+  push:
+    branches: [ "main" ]
+
+jobs:
+  deploy:
+    runs-on: self-hosted
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Build image
+        run: docker build -t myapp .
+
+      - name: Remove old container
+        run: docker rm -f myapp || true
+
+      - name: Run container
+        run: docker run -d --name myapp -p 8080:80 myapp
+
+      - name: Check site
+        run: |
+          sleep 5
+          curl -f http://localhost:8080
